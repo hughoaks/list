@@ -11,6 +11,8 @@ local=/twitter.com/
 local=/x.com/
 local=/facebook.com/
 local=/instagram.com/
+local=/reddit.com/
+local=/discord.com/
 
 
 ##local=/poki.com/
