@@ -6,9 +6,7 @@ local=/twitch.tv/
 local=/twitter.com/
 local=/x.com/
 local=/facebook.com/
-local=/instagram.com/
 local=/reddit.com/
-local=/discord.com/
 local=/roblox.com/
 
 
@@ -95,6 +93,7 @@ local=/4chan.org/
 local=/Gab.com/
 local=/NationalVanguard.org/
 local=/DailyStormer.su/
+
 
 
 
