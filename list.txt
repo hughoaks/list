@@ -1,8 +1,4 @@
 
-local=/youtube.com/
-local=/www.youtube.com/
-local=/m.youtube.com/
-local=/googlevideo.com/
 local=/spotify.com/
 local=/tiktok.com/
 local=/tnx.nl/
@@ -13,6 +9,7 @@ local=/facebook.com/
 local=/instagram.com/
 local=/reddit.com/
 local=/discord.com/
+local=/roblox.com/
 
 
 ##local=/poki.com/
@@ -98,5 +95,6 @@ local=/4chan.org/
 local=/Gab.com/
 local=/NationalVanguard.org/
 local=/DailyStormer.su/
+
 
 
