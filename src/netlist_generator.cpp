@@ -24,11 +24,15 @@ void NetlistGenerator::generate() {
         generatePipeline();
     }
 
+    // Generate control flow structures for synthesis testing
+    generateControlBlocks();
+
     connectOutputs();
     assignDepths();
 
     if (config_.verbose) {
         std::cout << "Generated " << operations_.size() << " operations" << std::endl;
+        std::cout << "Generated " << control_blocks_.size() << " control blocks" << std::endl;
         std::cout << "Total signals: " << (inputs_.size() + outputs_.size() + wires_.size() + regs_.size()) << std::endl;
     }
 }
@@ -445,4 +449,206 @@ OpType NetlistGenerator::selectShiftOpType() {
 
     std::discrete_distribution<size_t> dist(weights.begin(), weights.end());
     return types[dist(rng_)];
+}
+
+void NetlistGenerator::generateControlBlocks() {
+    if (config_.generate_case_statements || config_.num_case_statements > 0) {
+        generateCaseStatements();
+    }
+
+    if (config_.generate_if_else_chains || config_.num_if_else_chains > 0) {
+        generateIfElseChains();
+    }
+
+    if (config_.generate_sharing_opportunities) {
+        generateSharingOpportunities();
+    }
+}
+
+void NetlistGenerator::generateCaseStatements() {
+    int num_cases = config_.num_case_statements > 0 ? config_.num_case_statements :
+                    (config_.generate_case_statements ? 2 : 0);
+
+    for (int i = 0; i < num_cases; ++i) {
+        std::vector<SignalPtr> available = getAvailableSignals();
+        if (available.empty()) continue;
+
+        // Select a signal to use as the case selector
+        SignalPtr selector = selectRandomSignal(available);
+        if (!selector) continue;
+
+        // Determine number of cases based on selector width (limit to reasonable number)
+        int max_case_value = std::min(1 << std::min(selector->getWidth(), 4), config_.cases_per_statement);
+
+        auto control_block = std::make_shared<ControlBlock>(ControlType::CASE_STATEMENT, selector);
+
+        // Create output signal(s) that will be assigned in each case
+        int num_outputs = randomInt(1, 3);
+        std::vector<SignalPtr> case_outputs;
+        for (int j = 0; j < num_outputs; ++j) {
+            int width = generateRandomWidth();
+            SignalPtr output = createReg(width, config_.use_signed && randomBool(0.5));
+            case_outputs.push_back(output);
+        }
+
+        // Generate cases
+        for (int case_val = 0; case_val < max_case_value; ++case_val) {
+            control_block->addCase(case_val);
+
+            // For each output, assign a value in this case
+            for (auto& output : case_outputs) {
+                if (config_.generate_sharing_opportunities && randomBool(0.7)) {
+                    // Generate an arithmetic operation (creates sharing opportunity)
+                    SignalPtr a = selectRandomSignal(available);
+                    SignalPtr b = selectRandomSignal(available);
+                    if (a && b) {
+                        // The synthesis tool can potentially share this operation across cases
+                        OpType op_type = selectArithmeticOpType();
+                        SignalPtr temp_out = createWire(std::max(a->getWidth(), b->getWidth()),
+                                                       a->isSigned() || b->isSigned());
+                        auto op = std::make_shared<Operation>(op_type, temp_out);
+                        op->addInput(a);
+                        op->addInput(b);
+                        control_block->addCaseOperation(case_val, op);
+                        control_block->addCaseAssignment(case_val, output, temp_out);
+                    }
+                } else {
+                    // Simple assignment
+                    SignalPtr input = selectRandomSignal(available);
+                    if (input) {
+                        control_block->addCaseAssignment(case_val, output, input);
+                    }
+                }
+            }
+        }
+
+        // Add default case
+        std::vector<std::pair<SignalPtr, SignalPtr>> default_assigns;
+        for (auto& output : case_outputs) {
+            SignalPtr input = selectRandomSignal(available);
+            if (input) {
+                default_assigns.push_back({output, input});
+            }
+        }
+        control_block->setDefaultCase(default_assigns);
+
+        control_blocks_.push_back(control_block);
+
+        if (config_.verbose) {
+            std::cout << "Generated case statement with " << max_case_value << " cases" << std::endl;
+        }
+    }
+}
+
+void NetlistGenerator::generateIfElseChains() {
+    int num_chains = config_.num_if_else_chains > 0 ? config_.num_if_else_chains :
+                     (config_.generate_if_else_chains ? 2 : 0);
+
+    for (int i = 0; i < num_chains; ++i) {
+        std::vector<SignalPtr> available = getAvailableSignals();
+        if (available.size() < 3) continue;
+
+        auto control_block = std::make_shared<ControlBlock>(ControlType::IF_ELSE_CHAIN);
+
+        // Create outputs that will be assigned in mutually exclusive branches
+        int num_outputs = randomInt(1, 3);
+        std::vector<SignalPtr> shared_outputs;
+        for (int j = 0; j < num_outputs; ++j) {
+            int width = generateRandomWidth();
+            SignalPtr output = createReg(width, config_.use_signed && randomBool(0.5));
+            shared_outputs.push_back(output);
+        }
+
+        // Generate 2-4 branches (if/else if/else if/else)
+        int num_branches = randomInt(2, 4);
+
+        for (int branch = 0; branch < num_branches; ++branch) {
+            // All branches except the last have a condition
+            if (branch < num_branches - 1) {
+                // Create a condition signal
+                SignalPtr cond = selectRandomSignal(available);
+                if (!cond) continue;
+                control_block->addBranch(cond);
+            } else {
+                // Last branch is "else"
+                control_block->addElseBranch();
+            }
+
+            // In each branch, perform operations on shared outputs
+            // These operations are MUTUALLY EXCLUSIVE and can potentially share resources
+            for (auto& output : shared_outputs) {
+                if (config_.generate_sharing_opportunities && randomBool(0.8)) {
+                    // Generate an expensive operation (e.g., multiply)
+                    // Synthesis tools should recognize these are mutually exclusive
+                    SignalPtr a = selectRandomSignal(available);
+                    SignalPtr b = selectRandomSignal(available);
+                    if (a && b) {
+                        OpType op_type = OpType::MULT;  // Expensive operation
+                        SignalPtr temp_out = createWire(a->getWidth() + b->getWidth(),
+                                                       a->isSigned() || b->isSigned());
+                        auto op = std::make_shared<Operation>(op_type, temp_out);
+                        op->addInput(a);
+                        op->addInput(b);
+                        control_block->addBranchOperation(branch, op);
+                        control_block->addBranchAssignment(branch, output, temp_out);
+                    }
+                } else {
+                    SignalPtr input = selectRandomSignal(available);
+                    if (input) {
+                        control_block->addBranchAssignment(branch, output, input);
+                    }
+                }
+            }
+        }
+
+        control_blocks_.push_back(control_block);
+
+        if (config_.verbose) {
+            std::cout << "Generated if-else chain with " << num_branches << " branches (mutually exclusive)" << std::endl;
+        }
+    }
+}
+
+void NetlistGenerator::generateSharingOpportunities() {
+    // Generate additional operations that could potentially share resources
+    // This creates temporal sharing opportunities based on control signals
+    std::vector<SignalPtr> available = getAvailableSignals();
+    if (available.size() < 4) return;
+
+    // Create a few sets of operations that are enabled by different control signals
+    int num_groups = randomInt(1, 3);
+
+    for (int g = 0; g < num_groups; ++g) {
+        // Create enable signal
+        SignalPtr enable = selectRandomSignal(available);
+        if (!enable) continue;
+
+        // Create 2-3 operations that all use the same enable
+        // These can potentially share a single functional unit if only one is active at a time
+        int ops_in_group = randomInt(2, 3);
+
+        for (int i = 0; i < ops_in_group; ++i) {
+            SignalPtr a = selectRandomSignal(available);
+            SignalPtr b = selectRandomSignal(available);
+            if (!a || !b) continue;
+
+            // Use expensive operations (multipliers, dividers) for sharing
+            OpType op_type = randomBool(0.7) ? OpType::MULT : OpType::ADD;
+
+            int out_width = (op_type == OpType::MULT) ?
+                           (a->getWidth() + b->getWidth()) :
+                           std::max(a->getWidth(), b->getWidth());
+
+            SignalPtr result = createWire(out_width, a->isSigned() || b->isSigned());
+
+            auto op = std::make_shared<Operation>(op_type, result);
+            op->addInput(a);
+            op->addInput(b);
+            operations_.push_back(op);
+        }
+
+        if (config_.verbose) {
+            std::cout << "Generated sharing opportunity group with " << ops_in_group << " operations" << std::endl;
+        }
+    }
 }

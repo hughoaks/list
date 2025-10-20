@@ -21,6 +21,7 @@ set(SOURCES
     src/config.cpp
     src/signal.cpp
     src/operation.cpp
+    src/control_block.cpp
     src/netlist_generator.cpp
     src/verilog_emitter.cpp
 )

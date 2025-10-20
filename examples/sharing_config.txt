@@ -1,0 +1,44 @@
+# Resource Sharing Configuration for Verilog Datapath Generator
+# This configuration tests synthesis tool resource sharing optimization
+
+# Random seed
+seed = 777
+
+# Module properties
+module_name = sharing_test_datapath
+num_inputs = 12
+num_outputs = 6
+
+# Signal widths
+input_width_min = 8
+input_width_max = 24
+output_width_min = 8
+output_width_max = 24
+
+# Datapath complexity
+num_operations = 40
+max_depth = 10
+num_pipeline_stages = 0
+
+# Operation weights - favor multipliers for sharing opportunities
+weight_arithmetic = 0.6
+weight_logical = 0.1
+weight_comparison = 0.05
+weight_shift = 0.1
+weight_mux = 0.1
+weight_concat = 0.03
+weight_reduction = 0.02
+
+# Control flow features - KEY FEATURES FOR TESTING SYNTHESIS OPTIMIZATION
+generate_case_statements = true
+generate_if_else_chains = true
+generate_sharing_opportunities = true
+
+# Number of control structures
+num_case_statements = 2
+num_if_else_chains = 2
+cases_per_statement = 4
+
+# Output options
+output_file = sharing_test.v
+verbose = true

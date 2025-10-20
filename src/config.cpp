@@ -35,6 +35,12 @@ GeneratorConfig::GeneratorConfig()
     , use_signed(true)
     , use_tristate(false)
     , generate_testbench(false)
+    , generate_case_statements(false)
+    , generate_if_else_chains(false)
+    , generate_sharing_opportunities(false)
+    , num_case_statements(0)
+    , num_if_else_chains(0)
+    , cases_per_statement(4)
     , output_file("output.v")
     , verbose(false)
 {
@@ -87,6 +93,12 @@ bool GeneratorConfig::loadFromFile(const std::string& filename) {
                 else if (key == "weight_reduction") weight_reduction = std::stod(value);
                 else if (key == "output_file") output_file = value;
                 else if (key == "verbose") verbose = (value == "true" || value == "1");
+                else if (key == "generate_case_statements") generate_case_statements = (value == "true" || value == "1");
+                else if (key == "generate_if_else_chains") generate_if_else_chains = (value == "true" || value == "1");
+                else if (key == "generate_sharing_opportunities") generate_sharing_opportunities = (value == "true" || value == "1");
+                else if (key == "num_case_statements") num_case_statements = std::stoi(value);
+                else if (key == "num_if_else_chains") num_if_else_chains = std::stoi(value);
+                else if (key == "cases_per_statement") cases_per_statement = std::stoi(value);
                 else {
                     std::cerr << "Warning: Unknown config key '" << key << "' at line " << line_num << std::endl;
                 }

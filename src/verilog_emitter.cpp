@@ -12,6 +12,20 @@ void VerilogEmitter::emit(std::ostream& os) const {
     emitModuleDeclaration(os);
     emitSignalDeclarations(os);
     emitCombinationalLogic(os);
+
+    // Emit control blocks (case statements, if-else chains)
+    const auto& control_blocks = generator_.getControlBlocks();
+    if (!control_blocks.empty()) {
+        os << "    // ========================================\n";
+        os << "    // Control Flow Structures\n";
+        os << "    // (for testing synthesis optimization)\n";
+        os << "    // ========================================\n\n";
+
+        for (const auto& cb : control_blocks) {
+            os << cb->generateVerilog(1) << "\n";
+        }
+    }
+
     emitSequentialLogic(os);
     emitFooter(os);
 }

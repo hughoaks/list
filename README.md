@@ -13,6 +13,12 @@ A full-featured random Verilog datapath generator written in C++ for testing and
 - **Multiplexers**: 2-to-1 and 4-to-1 muxes with ternary operators
 - **Concatenation**: Multi-signal concatenation
 
+### Control Flow and Optimization Testing (NEW!)
+- **Case Statements**: Generate case/switch statements for FSM and decoder optimization testing
+- **If-Else Chains**: Create mutually exclusive conditional branches for testing resource sharing
+- **Resource Sharing Opportunities**: Intentionally create operations in mutually exclusive paths that synthesis tools can potentially share (e.g., multiple multipliers that are never active simultaneously)
+- **Temporal Sharing**: Generate patterns where expensive operations (multipliers, dividers) can share hardware units
+
 ### Configurable Parameters
 - Number of inputs/outputs with configurable bit widths
 - Number of operations and maximum logic depth
@@ -142,6 +148,20 @@ Control the probability of generating each operation type (will be automatically
 - `weight_srl`: Shift right logical
 - `weight_sra`: Shift right arithmetic
 
+### Control Flow and Resource Sharing (NEW!)
+Control structures for testing synthesis optimization:
+- `generate_case_statements`: Enable case statement generation (true/false)
+- `generate_if_else_chains`: Enable if-else chain generation (true/false)
+- `generate_sharing_opportunities`: Create resource sharing opportunities (true/false)
+- `num_case_statements`: Number of case statements to generate
+- `num_if_else_chains`: Number of if-else chains to generate
+- `cases_per_statement`: Number of cases in each case statement (default: 4)
+
+**Why these features matter for synthesis testing:**
+- **Case statements** test FSM optimization, decoder synthesis, and state machine inference
+- **If-else chains** create mutually exclusive paths where synthesis tools can share expensive operations
+- **Sharing opportunities** test how well tools identify and exploit temporal resource sharing (e.g., one multiplier shared across multiple mutually exclusive operations)
+
 ## Example Configurations
 
 ### Basic Datapath (Area Optimization Test)
@@ -161,6 +181,22 @@ Generates a large, complex datapath with many operations and wide data paths, su
 ./verilog_gen -c examples/dsp_heavy_config.txt
 ```
 Generates a multiplier-heavy datapath to test DSP block inference and mapping in FPGAs.
+
+### Resource Sharing Test (NEW!)
+```bash
+./verilog_gen -c examples/sharing_config.txt
+```
+Generates a design with case statements, if-else chains, and mutually exclusive operations to test synthesis tool resource sharing optimization. This creates scenarios where:
+- Multiple multipliers exist in different case branches (can potentially share a single multiplier)
+- Operations in mutually exclusive if-else branches can share functional units
+- Synthesis tools must identify temporal sharing opportunities
+
+Example output includes:
+- **Case statements** with operations in each branch that could share resources
+- **If-else chains** with expensive operations (multipliers) in mutually exclusive paths
+- **Sharing groups** with operations controlled by different enable signals
+
+This is ideal for benchmarking how well synthesis tools perform resource sharing and area optimization.
 
 ## Synthesis Testing
 

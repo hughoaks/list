@@ -49,6 +49,14 @@ struct GeneratorConfig {
     bool use_tristate;
     bool generate_testbench;
 
+    // Control flow features (for testing synthesis optimization)
+    bool generate_case_statements;
+    bool generate_if_else_chains;
+    bool generate_sharing_opportunities;  // Create ops that can share resources
+    int num_case_statements;
+    int num_if_else_chains;
+    int cases_per_statement;  // Number of cases in each case statement
+
     // Output options
     std::string output_file;
     bool verbose;

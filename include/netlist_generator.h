@@ -4,6 +4,7 @@
 #include "config.h"
 #include "signal.h"
 #include "operation.h"
+#include "control_block.h"
 #include <vector>
 #include <random>
 #include <memory>
@@ -21,6 +22,7 @@ public:
     const std::vector<SignalPtr>& getWires() const { return wires_; }
     const std::vector<SignalPtr>& getRegs() const { return regs_; }
     const std::vector<OperationPtr>& getOperations() const { return operations_; }
+    const std::vector<ControlBlockPtr>& getControlBlocks() const { return control_blocks_; }
 
     std::string getModuleName() const { return config_.module_name; }
 
@@ -33,6 +35,7 @@ private:
     std::vector<SignalPtr> wires_;
     std::vector<SignalPtr> regs_;
     std::vector<OperationPtr> operations_;
+    std::vector<ControlBlockPtr> control_blocks_;
 
     int signal_counter_;
     int op_counter_;
@@ -42,6 +45,10 @@ private:
     void generateOutputs();
     void generateDatapath();
     void generatePipeline();
+    void generateControlBlocks();
+    void generateCaseStatements();
+    void generateIfElseChains();
+    void generateSharingOpportunities();
     void connectOutputs();
     void assignDepths();
 
