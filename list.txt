@@ -18,9 +18,9 @@ local=/poki.com/
 local=/brawlstars.com/
 local=/brawlstarsgame.com/
 local=/crazygames.com/
-local=/epicgames.com/
-local=/epicgames.dev/
-local=/fortnite.com/
+##local=/epicgames.com/
+##local=/epicgames.dev/
+##local=/fortnite.com/
 ##local=/oculus.com/
 ##local=/oculuscdn.com/
 ##local=/facebook-hardware.com/
@@ -95,6 +95,7 @@ local=/4chan.org/
 local=/Gab.com/
 local=/NationalVanguard.org/
 local=/DailyStormer.su/
+
 
 
 
