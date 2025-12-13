@@ -15,8 +15,8 @@ local=/redgifs.com/
 
 
 local=/poki.com/
-local=/brawlstars.com/
-local=/brawlstarsgame.com/
+#local=/brawlstars.com/
+#local=/brawlstarsgame.com/
 local=/crazygames.com/
 ##local=/epicgames.com/
 ##local=/epicgames.dev/
@@ -95,6 +95,7 @@ local=/4chan.org/
 local=/Gab.com/
 local=/NationalVanguard.org/
 local=/DailyStormer.su/
+
 
 
 
