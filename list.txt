@@ -15,6 +15,10 @@ local=/rbxcdn.com/
 
 local=/redgifs.com/
 
+local=/redd.it/
+local=/twimg.com/
+
+
 
 local=/youtube.com/
 
@@ -99,6 +103,7 @@ local=/4chan.org/
 local=/Gab.com/
 local=/NationalVanguard.org/
 local=/DailyStormer.su/
+
 
 
 
