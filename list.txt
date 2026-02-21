@@ -13,6 +13,11 @@ local=/reddit.com/
 local=/roblox.com/
 local=/rbxcdn.com/
 
+
+local=/robloxcdn.com/
+local=/rbxinfra.com/
+
+
 local=/redgifs.com/
 
 local=/redd.it/
@@ -103,6 +108,7 @@ local=/4chan.org/
 local=/Gab.com/
 local=/NationalVanguard.org/
 local=/DailyStormer.su/
+
 
 
 
