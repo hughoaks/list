@@ -7,13 +7,14 @@ local=/twitter.com/
 local=/x.com/
 local=/facebook.com/
 local=/reddit.com/
+local=/instagram.com/
 
 
 
-#local=/roblox.com/
-#local=/rbxcdn.com/
-#local=/robloxcdn.com/
-#local=/rbxinfra.com/
+local=/roblox.com/
+local=/rbxcdn.com/
+local=/robloxcdn.com/
+local=/rbxinfra.com/
 
 
 local=/redgifs.com/
@@ -106,6 +107,7 @@ local=/4chan.org/
 local=/Gab.com/
 local=/NationalVanguard.org/
 local=/DailyStormer.su/
+
 
 
 
