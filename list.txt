@@ -24,7 +24,7 @@ local=/twimg.com/
 
 
 
-local=/youtube.com/
+#local=/youtube.com/
 
 local=/poki.com/
 local=/brawlstars.com/
