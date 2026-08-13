@@ -11,10 +11,10 @@ local=/instagram.com/
 
 
 
-local=/roblox.com/
-local=/rbxcdn.com/
-local=/robloxcdn.com/
-local=/rbxinfra.com/
+#local=/roblox.com/
+#local=/rbxcdn.com/
+#local=/robloxcdn.com/
+#local=/rbxinfra.com/
 
 
 local=/redgifs.com/
@@ -22,9 +22,7 @@ local=/redgifs.com/
 local=/redd.it/
 local=/twimg.com/
 
-
-
-local=/youtube.com/
+#local=/youtube.com/
 
 local=/poki.com/
 local=/brawlstars.com/
