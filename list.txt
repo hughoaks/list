@@ -11,10 +11,10 @@ local=/instagram.com/
 
 
 
-#local=/roblox.com/
-#local=/rbxcdn.com/
-#local=/robloxcdn.com/
-#local=/rbxinfra.com/
+local=/roblox.com/
+local=/rbxcdn.com/
+local=/robloxcdn.com/
+local=/rbxinfra.com/
 
 
 local=/redgifs.com/
@@ -29,9 +29,9 @@ local=/brawlstars.com/
 local=/brawlstarsgame.com/
 local=/crazygames.com/
 
-#local=/epicgames.com/
-#local=/epicgames.dev/
-#local=/fortnite.com/
+local=/epicgames.com/
+local=/epicgames.dev/
+local=/fortnite.com/
 
 ##local=/oculus.com/
 ##local=/oculuscdn.com/
